@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmotionSense AI - Advanced Image Emotion Classifier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4361ee15;
+            --primary-dark: #3a56d4;
+            --secondary: #ff6b6b;
+            --success: #38b000;
+            --warning: #ffb700;
+            --info: #3a86ff;
+            --danger: #ef233c;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --border-radius: 12px;
+            --border-radius-sm: 8px;
+            --border-radius-lg: 16px;
+            --border-radius-xl: 24px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f7fa;
+            color: var(--gray-800);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .app-container {
+            max-width: 1200px;
+            margin: 24px auto;
+            background: transparent;
+        }
+
+        .logo-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 6px 12px;
+            border-radius: 50px;
+            gap: 8px;
+        }
+
+        .logo-badge i {
+            font-size: 18px;
+            color: white;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            color: white;
+            padding: 40px;
+            border-radius: var(--border-radius-xl);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            opacity: 0.5;
+            z-index: 0;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .header p {
+            margin-top: 8px;
+            opacity: 0.9;
+            font-weight: 400;
+            font-size: 16px;
+        }
+        
+        .header .version {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-weight: 500;
+        }
+        
+        .nav {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            padding: 4px;
+            display: flex;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 16px;
+            position: sticky;
+            top: 16px;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            width: 100%;
+        }
+        
+        .nav-links li {
+            flex: 1;
+        }
+        
+        .nav-links a {
+            color: var(--gray-700);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: var(--transition);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border-radius: var(--border-radius);
+            height: 100%;
+        }
+        
+        .nav-links a:hover {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        .nav-links a.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .nav-links a i {
+            font-size: 16px;
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid var(--gray-200);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+        
+        .card h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: var(--gray-800);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .card h3 i {
+            color: var(--primary);
+            font-size: 20px;
+        }
+        
+        .upload-area {
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+            margin-bottom: 24px;
+            background: var(--gray-100);
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        
+        .upload-area i {
+            font-size: 56px;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+        
+        .upload-area h4 {
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .upload-area p {
+            color: var(--gray-600);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--gray-300);
+            transform: translateY(-2px);
+        }
+        
+        .upload-form {
+            display: none;
+        }
+        
+        .preview-container {
+            margin-top: 24px;
+            display: none;
+        }
+        
+        .preview-image {
+            max-width: 100%;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .actions .btn {
+            flex: 1;
+        }
+        
+        .result-card {
+            display: none;
+        }
+        
+        .result-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .result-header span {
+            background: var(--gray-100);
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+        
+        .emotion-display {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+            background: var(--primary-light);
+            padding: 20px;
+            border-radius: var(--border-radius);
+        }
+        
+        .emotion-icon {
+            font-size: 48px;
+            color: var(--primary);
+            background: white;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            box-shadow: var(--shadow);
+        }
+        
+        .emotion-text {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .confidence-section {
+            margin-bottom: 24px;
+        }
+
+        .confidence-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .confidence-value {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .confidence-bar {
+            height: 8px;
+            background: var(--gray-200);
+            border-radius: 50px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+        
+        .confidence-level {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            border-radius: 50px;
+            width: 0%;
+            transition: width 1s ease-in-out;
+        }
+        
+        .detailed-results {
+            background: var(--gray-100);
+            border-radius: var(--border-radius);
+            padding: 20px;
+        }
+        
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .result-row:last-child {
+            border-bottom: none;
+        }
+        
+        .result-label {
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-label i {
+            color: var(--primary);
+            font-size: 14px;
+        }
+        
+        .result-value {
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+        
+        .history-list {
+            list-style: none;
+        }
+        
+        .history-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid var(--gray-200);
+            transition: var(--transition);
+            border-radius: var(--border-radius-sm);
+        }
+        
+        .history-item:hover {
+            background: var(--gray-100);
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .history-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--border-radius-sm);
+            object-fit: cover;
+            margin-right: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .history-details {
+            flex: 1;
+        }
+        
+        .history-result {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+        
+        .history-time {
+            color: var(--gray-600);
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .history-time i {
+            font-size: 11px;
+        }
+        
+        .history-emotion {
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .emotion-happy {
+            background: rgba(56, 176, 0, 0.1);
+            color: var(--success);
+        }
+        
+        .emotion-sad {
+            background: rgba(255, 107, 107, 0.1);
+            color: var(--secondary);
+        }
+
+        .emotion-neutral {
+            background: rgba(58, 134, 255, 0.1);
+            color: var(--info);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        
+        .stat-box {
+            background: var(--gray-100);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+            border: 1px solid var(--gray-200);
+        }
+
+        .stat-box:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            color: var(--gray-700);
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .tips-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .tips-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px;
+            background: var(--gray-100);
+            border-radius: var(--border-radius-sm);
+            transition: var(--transition);
+        }
+
+        .tips-item:hover {
+            background: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tips-icon {
+            background: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 14px;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tips-text {
+            font-size: 13px;
+            color: var(--gray-700);
+        }
+        
+        .footer {
+            background: white;
+            text-align: center;
+            padding: 24px;
+            font-size: 14px;
+            color: var(--gray-600);
+            border-radius: var(--border-radius-lg);
+            margin-top: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 16px;
+        }
+
+        .footer-links a {
+            color: var(--gray-700);
+            text-decoration: none;
+            font-size: 13px;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 32px;
+        }
+        
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 5px solid var(--gray-200);
+            border-bottom-color: var(--primary);
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+            margin-bottom: 16px;
+        }
+
+        @keyframes rotation {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            width: 90%;
+            max-width: 500px;
+            padding: 32px;
+            position: relative;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--gray-600);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: var(--gray-100);
+            color: var(--danger);
+        }
+
+        .emotion-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 5px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            background: transparent;
+            z-index: 1000;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, var(--primary), var(--info));
+            transition: width 0.3s ease;
+        }
+
+        .analytics-summary {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .analytics-card {
+            flex: 1;
+            background: var(--gray-100);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            text-align: center;
+            transition: var(--transition);
+            border: 1px solid var(--gray-200);
+        }
+
+        .analytics-card:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .analytics-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--primary);
+        }
+
+        .analytics-label {
+            color: var(--gray-600);
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                padding: 24px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+
+            .tips-list {
+                grid-template-columns: 1fr;
+            }
+
+            .upload-area {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="app-container">
+        <div class="header">
+            <div class="logo-badge">
+                <i class="fas fa-brain"></i>
+                <span>AI Powered</span>
+            </div>
+            <div class="header-content">
+                <h1>EmotionSense AI</h1>
+                <p>Advanced Image Emotion Recognition System</p>
+                <span class="version">v2.3.1</span>
+            </div>
+        </div>
+        
+        <div class="nav">
+            <ul class="nav-links">
+                <li><a href="#" class="active"><i class="fas fa-camera"></i> Classifier</a></li>
+                <li><a href="#"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+                <li><a href="#"><i class="fas fa-history"></i> History</a></li>
+                <li><a href="#"><i class="fas fa-info-circle"></i> About</a></li>
+            </ul>
+        </div>
+        
+        <div class="container">
+            <div class="content">
+                <div class="left-panel">
+                    <div class="card">
+                        <h3><i class="fas fa-cloud-upload-alt"></i> Upload Image</h3>
+                        <div class="upload-area" id="dropArea">
+                            <i class="fas fa-image"></i>
+                            <h4>Drag & Drop your image here</h4>
+                            <p>Supported formats: JPG, PNG, WEBP</p>
+                            <button class="btn btn-primary" id="selectImage">
+                                <i class="fas fa-folder-open"></i> Select Image
+                            </button>
+                        </div>
+                        
+                        <form id="uploadForm" class="upload-form">
+                            <input type="file" name="file" id="fileInput" accept="image/*" hidden>
+                        </form>
+                        
+                        <div class="preview-container" id="previewContainer">
+                            <img src="" alt="Preview" class="preview-image" id="previewImage">
+                            
+                            <div class="actions">
+                                <button class="btn btn-success" id="analyzeBtn">
+                                    <i class="fas fa-brain"></i> Analyze Emotion
+                                </button>
+                                <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                            </div>
+                        </div>
+                        
+                        <div class="loading" id="loadingIndicator">
+                            <span class="loader"></span>
+                            <p>Analyzing image emotions...</p>
+                            <p style="font-size: 13px; color: var(--gray-600); margin-top: 8px;">Our AI is processing your image</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card result-card" id="resultCard">
+                        <div class="result-header">
+                            <h3><i class="fas fa-chart-bar"></i> Analysis Results</h3>
+                            <span id="analyzeTime"><i class="far fa-clock"></i> 2.3 seconds</span>
+                        </div>
+                        
+                        <div class="emotion-display">
+                            <div class="emotion-icon" id="emotionIcon">
+                                <i class="far fa-smile"></i>
+                            </div>
+                            <div class="emotion-text" id="emotionText">Happy</div>
+                        </div>
+                        
+                        <div class="confidence-section">
+                            <div class="confidence-label">
+                                <span>Confidence</span>
+                                <span class="confidence-value" id="confidencePercentage">87%</span>
+                            </div>
+                            <div class="confidence-bar">
+                                <div class="confidence-level" id="confidenceLevel"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="detailed-results">
+                            <div class="result-row">
+                                <span class="result-label"><i class="far fa-smile"></i> Happy</span>
+                                <span class="result-value" id="happyValue">87%</span>
+                            </div>
+                            <div class="result-row">
+                                <span class="result-label"><i class="far fa-frown"></i> Sad</span>
+                                <span class="result-value" id="sadValue">13%</span>
+                            </div>
+                            <div class="result-row">
+                                <span class="result-label"><i class="far fa-meh"></i> Neutral</span>
+                                <span class="result-value" id="neutralValue">0%</span>
+                            </div>
+                            <div class="result-row">
+                                <span class="result-label"><i class="fas fa-expand"></i> Image Resolution</span>
+                                <span class="result-value" id="imageResolution">1024 x 768</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 24px; text-align: center;">
+                            <button class="btn btn-primary">
+                                <i class="fas fa-download"></i> Export Results
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="right-panel">
+                    <div class="card">
+                        <h3><i class="fas fa-history"></i> Recent Analysis</h3>
+                        <ul class="history-list">
+                            <li class="history-item">
+                                <img src="/api/placeholder/60/60" alt="History" class="history-thumb">
+                                <div class="history-details">
+                                    <div class="history-result">Image_0423.jpg</div>
+                                    <div class="history-time"><i class="far fa-clock"></i> Today, 10:45 AM</div>
+                                </div>
+                                <span class="history-emotion emotion-happy">Happy</span>
+                            </li>
+                            <li class="history-item">
+                                <img src="/api/placeholder/60/60" alt="History" class="history-thumb">
+                                <div class="history-details">
+                                    <div class="history-result">Portrait_12.png</div>
+                                    <div class="history-time"><i class="far fa-clock"></i> Yesterday, 3:22 PM</div>
+                                </div>
+                                <span class="history-emotion emotion-sad">Sad</span>
+                            </li>
+                            <li class="history-item">
+                                <img src="/api/placeholder/60/60" alt="History" class="history-thumb">
+                                <div class="history-details">
+                                    <div class="history-result">Family_pic.jpg</div>
+                                    <div class="history-time"><i class="far fa-calendar-alt"></i> Apr 20, 2025</div>
+                                </div>
+                                <span class="history-emotion emotion-happy">Happy</span>
+                            </li>
+                            <li class="history-item">
+                                <img src="/api/placeholder/60/60" alt="History" class="history-thumb">
+                                <div class="history-details">
+                                    <div class="history-result">Meeting_screenshot.png</div>
+                                    <div class="history-time"><i class="far fa-calendar-alt"></i> Apr 19, 2025</div>
+                                </div>
+                                <span class="history-emotion emotion-neutral">Neutral</span>
+                            </li>
+                        </ul>
+
+                        <div style="text-align: center; margin-top: 16px;">
+                            <button class="btn btn-secondary">
+                                <i class="fas fa-list"></i> View All History
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3><i class="fas fa-chart-pie"></i> Statistics</h3>
+                        <div class="analytics-summary">
+                            <div class="analytics-card">
+                                <div class="analytics-value">148</div>
+                                <div class="analytics-label">Total Analyses</div>
+                            </div>
+                            <div class="analytics-card">
+                                <div class="analytics-value">92%</div>
+                                <div class="analytics-label">Accuracy Rate</div>
+                            </div>
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-box">
+                                <div class="stat-value">87</div>
+                                <div class="stat-label">Happy Images</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">42</div>
+                                <div class="stat-label">Sad Images</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">19</div>
+                                <div class="stat-label">Neutral Images</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">2.1s</div>
+                                <div class="stat-label">Avg. Analysis Time</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3><i class="fas fa-lightbulb"></i> Usage Tips</h3>
+                        <p>Get the most accurate results with these best practices:</p>
+                        <ul class="tips-list">
+                            <li class="tips-item">
+                                <div class="tips-icon"><i class="fas fa-camera"></i></div>
+                                <div class="tips-text">Use high resolution images for better accuracy.</div>
+                            </li>
+                            <li class="tips-item">
+                                <div class="tips-icon"><i class="fas fa-sun"></i></div>
+                                <div class="tips-text">Well-lit photos improve detection quality.</div>
+                            </li>
+                            <li class="tips-item">
+                                <div class="tips-icon"><i class="fas fa-crop"></i></div>
+                                <div class="tips-text">Center the face in the frame for best results.</div>
+                            </li>
+                            <li class="tips-item">
+                                <div class="tips-icon"><i class="fas fa-users"></i></div>
+                                <div class="tips-text">Single-person images work better than groups.</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Help & Support</a>
+                    <a href="#">Developer API</a>
+                </div>
+                <p>&copy; 2025, EmotionSense AI. All rights reserved.</p>
+            </div>
+            
+            <div class="modal" id="helpModal">
+                <div class="modal-content">
+                    <div class="modal-close" id="closeModal"><i class="fas fa-times"></i></div>
+                    <h3 style="margin-bottom: 16px;">How EmotionSense Works</h3>
+                    <p>EmotionSense AI uses deep learning algorithms to analyze facial expressions in images and determine the emotional state being displayed.</p>
+                    <p style="margin-top: 16px;">Our system is trained on millions of images and can detect three primary emotions:</p>
+                    <ul style="list-style: none; margin: 16px 0;">
+                        <li style="margin-bottom: 12px; display: flex; align-items: center;">
+                            <i class="far fa-smile" style="color: var(--success); margin-right: 8px;"></i>
+                            <span><strong>Happy</strong> - Smiling, joyful expressions</span>
+                        </li>
+                        <li style="margin-bottom: 12px; display: flex; align-items: center;">
+                            <i class="far fa-frown" style="color: var(--secondary); margin-right: 8px;"></i>
+                            <span><strong>Sad</strong> - Frowning, downturned expressions</span>
+                        </li>
+                        <li style="display: flex; align-items: center;">
+                            <i class="far fa-meh" style="color: var(--info); margin-right: 8px;"></i>
+                            <span><strong>Neutral</strong> - Neither happy nor sad expressions</span>
+                        </li>
+                    </ul>
+                    <p style="margin-top: 16px;">For best results, use clear, well-lit images with the subject facing the camera.</p>
+                    <div style="text-align: center; margin-top: 24px;">
+                        <button class="btn btn-primary" id="gotItBtn">Got it!</button>
+                    </div>
+                </div>
+            </div>
+            
+            <script>
+                // Progress bar animation
+                const progressBar = document.getElementById('progressBar');
+                window.addEventListener('load', () => {
+                    progressBar.style.width = '100%';
+                    setTimeout(() => {
+                        progressBar.style.opacity = '0';
+                    }, 1000);
+                });
+            
+                // File upload handling
+                const dropArea = document.getElementById('dropArea');
+                const fileInput = document.getElementById('fileInput');
+                const selectImageBtn = document.getElementById('selectImage');
+                const previewContainer = document.getElementById('previewContainer');
+                const previewImage = document.getElementById('previewImage');
+                const cancelBtn = document.getElementById('cancelBtn');
+                const analyzeBtn = document.getElementById('analyzeBtn');
+                const loadingIndicator = document.getElementById('loadingIndicator');
+                const resultCard = document.getElementById('resultCard');
+                
+                // Help modal
+                const helpModal = document.getElementById('helpModal');
+                const closeModal = document.getElementById('closeModal');
+                const gotItBtn = document.getElementById('gotItBtn');
+            
+                // File selection event
+                selectImageBtn.addEventListener('click', () => {
+                    fileInput.click();
+                });
+            
+                // File input change event
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length) {
+                        displayPreview(e.target.files[0]);
+                    }
+                });
+            
+                // Drag and drop events
+                ['dragover', 'dragenter'].forEach(eventName => {
+                    dropArea.addEventListener(eventName, (e) => {
+                        e.preventDefault();
+                        dropArea.style.borderColor = 'var(--primary)';
+                        dropArea.style.background = 'var(--primary-light)';
+                    }, false);
+                });
+            
+                ['dragleave', 'dragend'].forEach(eventName => {
+                    dropArea.addEventListener(eventName, () => {
+                        dropArea.style.borderColor = 'var(--gray-300)';
+                        dropArea.style.background = 'var(--gray-100)';
+                    }, false);
+                });
+            
+                dropArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropArea.style.borderColor = 'var(--gray-300)';
+                    dropArea.style.background = 'var(--gray-100)';
+                    
+                    if (e.dataTransfer.files.length) {
+                        displayPreview(e.dataTransfer.files[0]);
+                    }
+                }, false);
+            
+                // Display image preview
+                function displayPreview(file) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(event) {
+                        previewImage.src = event.target.result;
+                        dropArea.style.display = 'none';
+                        previewContainer.style.display = 'block';
+                    }
+                    
+                    reader.readAsDataURL(file);
+                }
+            
+                // Cancel button
+                cancelBtn.addEventListener('click', () => {
+                    dropArea.style.display = 'block';
+                    previewContainer.style.display = 'none';
+                    fileInput.value = '';
+                });
+            
+                // Analyze button
+                analyzeBtn.addEventListener('click', () => {
+                    previewContainer.style.display = 'none';
+                    loadingIndicator.style.display = 'block';
+                    
+                    // Simulate analysis delay
+                    setTimeout(() => {
+                        loadingIndicator.style.display = 'none';
+                        resultCard.style.display = 'block';
+                        
+                        // Simulate confidence level animation
+                        document.getElementById('confidenceLevel').style.width = '87%';
+                        
+                        // Update result values
+                        document.getElementById('analyzeTime').innerHTML = '<i class="far fa-clock"></i> 2.3 seconds';
+                        document.getElementById('confidencePercentage').innerText = '87%';
+                        document.getElementById('happyValue').innerText = '87%';
+                        document.getElementById('sadValue').innerText = '13%';
+                        document.getElementById('neutralValue').innerText = '0%';
+                        
+                        const img = new Image();
+                        img.src = previewImage.src;
+                        img.onload = function() {
+                            document.getElementById('imageResolution').innerText = `${this.width} × ${this.height}`;
+                        };
+                    }, 3000);
+                });
+            
+                // Modal handling
+                closeModal.addEventListener('click', () => {
+                    helpModal.style.display = 'none';
+                });
+            
+                gotItBtn.addEventListener('click', () => {
+                    helpModal.style.display = 'none';
+                });
+            
+                // Show help modal after 3 seconds (for demo purposes)
+                setTimeout(() => {
+                    // Uncomment to automatically show modal on page load
+                    // helpModal.style.display = 'flex';
+                }, 3000);
+            </script>
+            </body>
+            </html>
