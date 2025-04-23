@@ -1,4 +1,5 @@
-🧠 CNN (Facial Emotion Classifier)
+🧠 CNN  (Facial Emotion Classifier)
+
 This project demonstrates an end-to-end implementation of a Convolutional Neural Network (CNN) to classify images into different categories using TensorFlow and Keras. The model was trained on labeled images using supervised learning and achieved strong performance in identifying patterns and features from image data.
 
 🚀 Project Overview
